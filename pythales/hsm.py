@@ -462,6 +462,7 @@ class HSM():
     def init_connection(self):
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock.bind(('', self.port))   
             self.sock.listen(5)
             print('Listening on port {}'.format(self.port))
@@ -475,7 +476,7 @@ class HSM():
         """
         data = self.conn.recv(4096)
         if len(data):
-            trace('<< {} bytes received from {}: '.format(len(data), client_name), data)
+            trace(title='<< {} bytes received from {}: '.format(len(data), client_name), data=data)
             return data
         else:
             self.conn.shutdown(socket.SHUT_RDWR)
@@ -488,7 +489,7 @@ class HSM():
         """
         response_data = response.build()
         self.conn.send(response_data)
-        trace('>> {} bytes sent to {}:'.format(len(response_data), client_name), response_data)
+        trace(title='>> {} bytes sent to {}:'.format(len(response_data), client_name), data=response_data)
         print(response.trace())
         
 
